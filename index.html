@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>川赔通 · 四川省劳动争议赔偿计算器</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-inner">
+      <div class="brand-badge" aria-hidden="true">⚖</div>
+      <div class="brand-text">
+        <div class="brand">川赔通</div>
+        <div class="brand-sub">四川省劳动争议赔偿计算器</div>
+      </div>
+      <nav class="header-nav">
+        <a href="test.html">测试用例</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="hero">
+      <span class="hero-icon" aria-hidden="true">💡</span>
+      <div>
+        <strong>使用提示：</strong>本工具依据《劳动合同法》等规定测算，结果仅供参考，不构成法律意见。计算参数默认为示例数据，正式使用前请以四川省人力资源和社会保障厅最新公布数据更新。
+      </div>
+    </section>
+
+    <form id="calcForm" novalidate>
+      <section class="card">
+        <h2><span class="step-num">1</span>离职情形</h2>
+        <p class="card-sub">选择最符合的一项，系统将据此判断 N / 2N / N+1 或无补偿口径</p>
+        <div class="scenario-grid" id="scenarioGrid"></div>
+        <p class="hint" id="scenarioHint"></p>
+        <div id="noticeBlock" class="sub-block hidden">
+          <label class="check-label">
+            <input type="checkbox" id="notified30">
+            用人单位已提前30日书面通知（勾选后不计算代通知金）
+          </label>
+          <div class="field" style="margin-top:12px">
+            <label for="lastMonthWage">解除前上一个月工资（元，计算代通知金）</label>
+            <input type="number" id="lastMonthWage" min="0" step="0.01" placeholder="如 8500">
+          </div>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2><span class="step-num">2</span>基础信息</h2>
+        <p class="card-sub">填写任职时间与工资水平，用于折算补偿年限与计算基数</p>
+        <div class="field-grid">
+          <div class="field">
+            <label for="joinDate">入职日期<span class="req">*</span></label>
+            <input type="date" id="joinDate" required>
+          </div>
+          <div class="field">
+            <label for="leaveDate">解除 / 离职日期<span class="req">*</span></label>
+            <input type="date" id="leaveDate" required>
+          </div>
+          <div class="field">
+            <label for="avgWage">离职前12个月平均应发工资（元/月）<span class="req">*</span></label>
+            <input type="number" id="avgWage" min="0" step="0.01" placeholder="如 9000" required>
+          </div>
+        </div>
+        <details class="params">
+          <summary>计算参数（示例值，每年需更新）</summary>
+          <div class="field-grid">
+            <div class="field">
+              <label for="localAvgWage">上年度职工月平均工资（元/月）</label>
+              <input type="number" id="localAvgWage" min="0" step="1" value="8000">
+            </div>
+            <div class="field">
+              <label for="minWage">当地最低工资（元/月）</label>
+              <input type="number" id="minWage" min="0" step="1" value="2100">
+            </div>
+          </div>
+          <label class="check-label">
+            <input type="checkbox" id="split2008">
+            进阶：跨2008年1月1日的工龄分段计算（2008年前按原规定）
+          </label>
+        </details>
+      </section>
+
+      <section class="card">
+        <h2><span class="step-num">3</span>补充主张（可选）</h2>
+        <p class="card-sub">勾选需要一并测算的其他款项，全部为可选</p>
+
+        <fieldset class="claim">
+          <label class="claim-toggle">
+            <input type="checkbox" id="dwEnabled">
+            未签书面劳动合同二倍工资
+          </label>
+          <div class="claim-body hidden" id="dwBody">
+            <label class="check-label">
+              <input type="checkbox" id="dwSigned">
+              期间已补签书面合同
+            </label>
+            <div class="field-grid">
+              <div class="field">
+                <label for="dwSignDate">补签日期（已补签时填写）</label>
+                <input type="date" id="dwSignDate">
+              </div>
+              <div class="field">
+                <label for="dwWage">未签期间月工资（元/月）</label>
+                <input type="number" id="dwWage" min="0" step="0.01" placeholder="如 7000">
+              </div>
+            </div>
+            <p class="hint">自用工之日起满一个月的次日起算，最多11个月。</p>
+          </div>
+        </fieldset>
+
+        <fieldset class="claim">
+          <label class="claim-toggle">
+            <input type="checkbox" id="otEnabled">
+            加班费
+          </label>
+          <div class="claim-body hidden" id="otBody">
+            <div class="field-grid">
+              <div class="field">
+                <label for="otBase">加班费计算基数（元/月）</label>
+                <input type="number" id="otBase" min="0" step="0.01" placeholder="如 6525">
+              </div>
+              <div class="field">
+                <label for="otWeekday">工作日延时加班（小时）</label>
+                <input type="number" id="otWeekday" min="0" step="0.5" placeholder="如 40">
+              </div>
+              <div class="field">
+                <label for="otWeekend">休息日加班未补休（小时）</label>
+                <input type="number" id="otWeekend" min="0" step="0.5" placeholder="如 64">
+              </div>
+              <div class="field">
+                <label for="otHoliday">法定节假日加班（小时）</label>
+                <input type="number" id="otHoliday" min="0" step="0.5" placeholder="如 8">
+              </div>
+            </div>
+            <p class="hint">日工资 = 月工资 ÷ 21.75；法定节假日加班不可用补休替代。</p>
+          </div>
+        </fieldset>
+
+        <fieldset class="claim">
+          <label class="claim-toggle">
+            <input type="checkbox" id="anEnabled">
+            未休年休假工资
+          </label>
+          <div class="claim-body hidden" id="anBody">
+            <div class="field-grid">
+              <div class="field">
+                <label for="anYears">累计工龄（年，含之前单位）</label>
+                <input type="number" id="anYears" min="0" step="0.1" placeholder="如 12">
+              </div>
+              <div class="field">
+                <label for="anDays">当年未休天数</label>
+                <input type="number" id="anDays" min="0" step="0.5" placeholder="如 6">
+              </div>
+            </div>
+            <p class="hint" id="anHint"></p>
+          </div>
+        </fieldset>
+
+        <fieldset class="claim">
+          <label class="claim-toggle">
+            <input type="checkbox" id="pbEnabled">
+            违法约定试用期赔偿
+          </label>
+          <div class="claim-body hidden" id="pbBody">
+            <label class="check-label">
+              <input type="checkbox" id="pbOpen">
+              无固定期限劳动合同
+            </label>
+            <div class="field-grid">
+              <div class="field">
+                <label for="pbContract">合同期限（月）</label>
+                <input type="number" id="pbContract" min="0" step="1" placeholder="如 24">
+              </div>
+              <div class="field">
+                <label for="pbAgreed">约定试用期（月）</label>
+                <input type="number" id="pbAgreed" min="0" step="0.5" placeholder="如 4">
+              </div>
+              <div class="field">
+                <label for="pbServed">已履行试用期（月）</label>
+                <input type="number" id="pbServed" min="0" step="0.5" placeholder="如 4">
+              </div>
+              <div class="field">
+                <label for="pbWage">转正后月工资（元/月）</label>
+                <input type="number" id="pbWage" min="0" step="0.01" placeholder="如 9000">
+              </div>
+            </div>
+            <p class="hint" id="pbHint"></p>
+          </div>
+        </fieldset>
+      </section>
+
+      <div class="actions">
+        <button type="button" class="btn-primary" id="btnCalc">开始计算</button>
+        <button type="button" class="btn-ghost" id="btnReset">清空</button>
+        <div class="demo-select">
+          <label for="demoCase">载入示例案例：</label>
+          <select id="demoCase">
+            <option value="">请选择…</option>
+          </select>
+        </div>
+      </div>
+    </form>
+
+    <section id="resultSection" class="hidden"></section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <p><strong>免责声明：</strong>本工具为课程作业演示项目，计算结果仅供参考，不构成法律意见。具体案件请咨询执业律师或当地劳动人事争议仲裁机构。</p>
+      <p>数据口径：四川省人力资源和社会保障厅、成都市统计局（参数需每年更新）。</p>
+    </div>
+  </footer>
+
+  <script src="calculator.js"></script>
+  <script src="tests.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

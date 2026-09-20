@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>川赔通 · 测试用例</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-inner">
+      <div class="brand">⚖️ 川赔通</div>
+      <div class="brand-sub">测试用例 · 自动校验计算逻辑</div>
+      <nav class="header-nav">
+        <a href="index.html">返回计算器</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="card">
+      <h2>自动测试结果</h2>
+      <p class="hint">本页面在浏览器中加载 calculator.js，运行 tests.js 中的全部业务案例与单元测试。</p>
+      <div id="testSummary" class="test-summary"></div>
+      <div style="overflow-x:auto">
+        <table class="test-table">
+          <thead>
+            <tr>
+              <th>类别</th>
+              <th>用例</th>
+              <th>期望</th>
+              <th>实际</th>
+              <th>结果</th>
+            </tr>
+          </thead>
+          <tbody id="testBody"></tbody>
+        </table>
+      </div>
+      <div class="actions" style="margin-bottom:0">
+        <button type="button" class="btn-primary" id="btnRerun">重新运行</button>
+        <a class="btn-link" href="index.html">返回计算器</a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <p>川赔通 · 四川省劳动争议赔偿计算器 —— 课程作业演示项目</p>
+    </div>
+  </footer>
+
+  <script src="calculator.js"></script>
+  <script src="tests.js"></script>
+  <script>
+    (function () {
+      function $(id) { return document.getElementById(id); }
+      function render() {
+        var results = runTests(Calculator);
+        var passed = 0;
+        results.forEach(function (result) { if (result.pass) passed += 1; });
+        var body = $('testBody');
+        body.innerHTML = '';
+        results.forEach(function (result) {
+          var row = document.createElement('tr');
+          [result.category, result.name, result.expected, result.actual].forEach(function (value) {
+            var cell = document.createElement('td');
+            cell.textContent = value;
+            row.appendChild(cell);
+          });
+          var statusCell = document.createElement('td');
+          statusCell.textContent = result.pass ? '通过' : '失败';
+          statusCell.className = result.pass ? 'pass-text' : 'fail-text';
+          row.appendChild(statusCell);
+          body.appendChild(row);
+        });
+        var summary = $('testSummary');
+        summary.textContent = '共 ' + results.length + ' 项，通过 ' + passed + ' 项' + (passed < results.length ? '，失败 ' + (results.length - passed) + ' 项' : '，全部通过');
+        summary.className = passed === results.length ? 'test-summary all-pass' : 'test-summary has-fail';
+      }
+      render();
+      $('btnRerun').addEventListener('click', render);
+    })();
+  </script>
+</body>
+</html>
